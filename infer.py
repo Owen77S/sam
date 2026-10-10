@@ -33,8 +33,11 @@ if args.weights is not None:
 processor = Sam3Processor(model, device=device)
 
 image = Image.open(args.image).convert("RGB")
-state = processor.set_image(image)
-output = processor.set_text_prompt(state=state, prompt=args.prompt)
+# le MLP du backbone calcule en bfloat16 à l'inférence (perflib/fused.py) : sans autocast,
+# la couche suivante reste en float32 et les dtypes ne correspondent plus
+with torch.autocast(device, dtype=torch.bfloat16):
+    state = processor.set_image(image)
+    output = processor.set_text_prompt(state=state, prompt=args.prompt)
 masks, scores = output["masks"], output["scores"]
 
 result = np.array(image, dtype=np.float32)
