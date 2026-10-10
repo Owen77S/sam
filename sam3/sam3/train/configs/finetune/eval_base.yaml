@@ -1,0 +1,13 @@
+# @package _global_
+# Évalue le SAM3 d'origine (poids Hugging Face, sans finetuning) sur test/,
+# avec les mêmes données et métriques que docker_config.yaml.
+defaults:
+  - docker_config
+  - _self_
+
+paths:
+  # dossier sans checkpoint : le modèle garde les poids d'origine
+  experiment_log_dir: /app/logs/base
+
+trainer:
+  mode: val
