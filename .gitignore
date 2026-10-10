@@ -1,0 +1,18 @@
+# Environnement Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Secrets
+.env
+
+# Données et sorties d'entraînement (trop lourdes pour git)
+data/
+logs/
+
+# Fichiers temporaires d'éditeur
+*.swp
+
+# Copie locale créée par un transfert sans ":" après l'hôte
+*@ssh.runpod.io/

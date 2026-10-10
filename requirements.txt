@@ -1,0 +1,11 @@
+numpy
+torch
+pillow
+setuptools<81  # sam3 importe pkg_resources, absent des setuptools récents
+# dépendances importées par sam3 mais non déclarées dans son packaging
+einops
+triton
+pycocotools
+psutil
+sam3 @ git+https://github.com/facebookresearch/sam3.git
+jupyterlab

@@ -1,0 +1,37 @@
+# torch / torchvision : installés avant ce fichier dans DockerfileVPS, depuis l'index CUDA de PyTorch
+torch
+torchvision
+numpy>=1.26,<2
+pillow
+setuptools<81  # sam3 importe pkg_resources, absent des setuptools récents
+jupyterlab
+
+# sam3 n'est pas installé depuis GitHub : on utilise le dépôt local monté dans /app/sam3
+# (PYTHONPATH dans DockerfileVPS), qui contient configs/finetune/. Ses dépendances sont donc listées ici.
+# dépendances de base de sam3 (pyproject.toml)
+timm>=1.0.17
+tqdm
+ftfy==6.1.1
+regex
+iopath>=0.1.10
+typing_extensions
+huggingface_hub
+
+# dépendances importées par sam3 mais non déclarées dans son packaging
+einops
+triton
+pycocotools
+psutil
+opencv-python-headless  # cv2, importé par sam3/train/transforms/point_sampling.py
+
+# dépendances d'entraînement (extra "train" du pyproject.toml de sam3)
+hydra-core
+submitit
+tensorboard
+zstandard
+scipy
+torchmetrics
+fvcore
+fairscale
+scikit-image
+scikit-learn

@@ -1,0 +1,25 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: DockerfileVPS
+    # HF_TOKEN est lu depuis .env (à créer sur le VPS, à ne pas envoyer)
+    env_file: .env
+    volumes:
+      - .:/app
+      - hf-cache:/root/.cache/huggingface
+    # mémoire partagée pour les workers du DataLoader (64 Mo par défaut)
+    shm_size: "8gb"
+    # accès au GPU : nécessite nvidia-container-toolkit sur l'hôte
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true
+
+volumes:
+  hf-cache:

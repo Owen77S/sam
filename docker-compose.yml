@@ -1,0 +1,12 @@
+  services:
+    dev:
+      build: .
+      env_file: .env
+      volumes:
+        - .:/app
+        - hf-cache:/root/.cache/huggingface
+      stdin_open: true
+      tty: true
+
+  volumes:
+    hf-cache:
