@@ -8,8 +8,8 @@ __pycache__/
 .env
 
 # Données et sorties d'entraînement (trop lourdes pour git)
-data/
-logs/
+/data/
+/logs/
 
 # Fichiers temporaires d'éditeur
 *.swp
