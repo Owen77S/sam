@@ -7,15 +7,16 @@ defaults:
 # ============================================================================
 paths:
   roboflow_vl_100_root: /app/data
-  experiment_log_dir: /app/logs/finetune
+  experiment_log_dir: ${oc.env:LOG_DIR,/app/logs/finetune}
   bpe_path: /app/sam3/sam3/assets/bpe_simple_vocab_16e6.txt.gz
 
 # Roboflow dataset configuration
 roboflow_train:
   num_images: null # Note: This is the number of images used for training. If null, all images are used.
   num_val_images: null # Note: Number of images used for validation. If null, all images are used (needed for meaningful COCO metrics).
-  supercategory: small_fold
-  ann_name: annotation_LM.json # Note: One file per class (LM, FC, LC, VV), written by scripts/make_coco_annotations.py
+  # DATASET, CLASS et LOG_DIR sont lus dans l'environnement (fixés par docker-compose-train.yml)
+  supercategory: ${oc.env:DATASET,small_fold}
+  ann_name: annotation_${oc.env:CLASS,LM}.json # Note: One file per class (LM, FC, LC, VV), written by scripts/make_coco_annotations.py
 
   # Training transforms pipeline
   train_transforms:

@@ -1,0 +1,35 @@
+# Entraînement final de sam3 sur toutes les images de data/base/fold_1/all
+# (train + test fusionnés), pour une classe, sans validation.
+# Usage : CLASS=LC docker compose -f docker-compose-final.yml up
+#   CLASS : LM, FC, LC ou VV
+# Les données doivent avoir été préparées par final_scripts/pipeline_data.sh.
+
+services:
+  train:
+    build:
+      context: .
+      dockerfile: DockerfileVPS
+    # HF_TOKEN est lu depuis .env (à créer sur la machine, à ne pas envoyer)
+    env_file: .env
+    environment:
+      DATASET: base/fold_1/all
+      CLASS: ${CLASS:?CLASS doit valoir LM, FC, LC ou VV}
+      LOG_DIR: /app/logs/final_${CLASS}
+    working_dir: /app/sam3
+    command: python sam3/train/train.py -c configs/finetune/final_config.yaml --use-cluster 0 --num-gpus 1
+    volumes:
+      - .:/app
+      - hf-cache:/root/.cache/huggingface
+    # mémoire partagée pour les workers du DataLoader (64 Mo par défaut)
+    shm_size: "8gb"
+    # accès au GPU : nécessite nvidia-container-toolkit sur l'hôte
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  hf-cache:
