@@ -1,0 +1,27 @@
+# Environnement GPU unique du projet. On ne l'utilise pas directement : le Makefile
+# lance `docker compose run` avec les variables du job (DATASET, CLASS, LOG_DIR).
+# Prérequis sur l'hôte : nvidia-container-toolkit.
+
+services:
+  sam3:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    # HF_TOKEN est lu depuis .env (à créer sur la machine depuis .env.example, à ne pas envoyer)
+    env_file: .env
+    volumes:
+      - .:/app
+      - hf-cache:/root/.cache/huggingface
+    # mémoire partagée pour les workers du DataLoader (64 Mo par défaut)
+    shm_size: "8gb"
+    # accès au GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  hf-cache:

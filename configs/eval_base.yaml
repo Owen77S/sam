@@ -1,0 +1,14 @@
+# @package _global_
+# Évalue le SAM3 d'origine (poids Hugging Face, sans finetuning) sur test/,
+# avec les mêmes données et métriques que finetune.yaml.
+defaults:
+  - finetune
+  - _self_
+
+paths:
+  # dossier sans checkpoint : le modèle garde les poids d'origine
+  # (LOG_DIR ne doit donc pas être celui d'un entraînement)
+  experiment_log_dir: ${oc.env:LOG_DIR,/app/logs/base}
+
+trainer:
+  mode: val

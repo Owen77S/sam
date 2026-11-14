@@ -1,4 +1,3 @@
-.venv
-img
-image.jpg
-__pycache__
+# Liste blanche : le code est monté par compose (.:/app), seul requirements.txt entre dans l'image.
+*
+!requirements.txt
