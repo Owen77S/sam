@@ -34,6 +34,7 @@ cat reports/resultat_fold_1.md
 | `train-final` | entraînement final sans validation sur `fold_N/all` — `CLASS=LC` obligatoire |
 | `report` | écrit `reports/resultat_fold_N.md` (d'origine vs finetuné) |
 | `infer` | `make infer IMAGE=… [WEIGHTS=…] [PROMPT=lumen] [OUT=…]` |
+| `smoke` | test de bout en bout sur `data/small` : annotations, 10 époques, validation (`CLASS=LM` par défaut) |
 | `shell` | shell interactif dans le conteneur |
 | `check` | teste le pipeline de données sur `tests/fixtures/` (sans Docker ni GPU) |
 
@@ -90,21 +91,21 @@ cd /app/sam3 && python sam3/train/train.py -c configs/project/finetune.yaml --us
 Le script lie `/app` vers le dépôt (les configs utilisent des chemins en `/app/...`) et place
 le cache Hugging Face sur `/workspace`. Les données (`data/`) sont à envoyer séparément.
 
-## Essai rapide sur `small_fold`
+## Test rapide sur `data/small`
 
-Petit jeu (20 images en train, 10 en test) pour tester la chaîne sans télécharger un fold. Il vit
-dans `data/small_fold/` (ignoré par git) et n'a pas d'annotations au départ :
+Petit jeu (20 images en train, 10 en test, ignoré par git) pour vérifier toute la chaîne sans
+télécharger de fold depuis Zenodo :
 
 ```bash
-python3 src/data/masks_to_rle.py data/small_fold
-python3 src/data/make_coco_annotations.py data/small_fold/train
-python3 src/data/make_coco_annotations.py data/small_fold/test
-docker compose run --rm -w /app/sam3 -e DATASET=small_fold -e CLASS=LC -e LOG_DIR=/app/logs/small_fold_LC \
-  sam3 python sam3/train/train.py --use-cluster 0 --num-gpus 1 -c configs/project/finetune.yaml
+make build && make smoke          # ou make smoke CLASS=LC
 ```
 
-Éviter VV (5 annotations en train, 0 en test : métriques à −1). `make train` vise `base/fold_N`
-et ne convient pas ici.
+`make smoke` génère les annotations de `data/small`, repart de zéro, entraîne 10 époques
+(`configs/smoke.yaml`, 200 itérations) puis valide sur `test/`. Les poids SAM3 viennent toujours de
+Hugging Face (`HF_TOKEN`). Sorties : `logs/smoke_<classe>/checkpoints/checkpoint.pt` et les métriques
+COCO dans `logs/smoke_<classe>/logs/**/val_stats.json`.
+
+Éviter VV (5 annotations en train, 0 en test : métriques à −1).
 
 ## Écarts de `sam3/` avec le dépôt de Meta
 

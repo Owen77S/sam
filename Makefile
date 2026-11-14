@@ -4,11 +4,12 @@
 #   FOLD     fold utilisé (1 à 5)                       défaut : 1
 #   CLASSES  classes traitées par eval-base/train/report  défaut : LM FC LC VV
 #   FOLDS    folds téléchargés par `make data`          défaut : $(FOLD)
-#   CLASS    classe unique, requise par train-final
+#   CLASS    classe unique, requise par train-final ; pour smoke, défaut : LM
 
 FOLD    ?= 1
 CLASSES ?= LM FC LC VV
 FOLDS   ?= $(FOLD)
+SMOKE_CLASS = $(or $(CLASS),LM)
 
 RUN   := docker compose run --rm
 TRAIN := python sam3/train/train.py --use-cluster 0 --num-gpus 1 -c
@@ -21,7 +22,7 @@ ALL_DONE  := $(foreach c,$(CLASSES),logs/base_fold_$(FOLD)_$(c)/DONE logs/fold_$
 .DEFAULT_GOAL := help
 # un seul GPU : jamais deux jobs en parallèle, même avec make -j
 .NOTPARALLEL:
-.PHONY: help build shell data data-final eval-base train train-final report all infer check
+.PHONY: help build shell data data-final eval-base train train-final report all infer smoke check
 
 help: ## Liste les cibles
 	@awk -F':.*## ' '/^[a-z-]+:.*## /{printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -75,6 +76,16 @@ infer: .env ## Inférence : IMAGE=… [WEIGHTS=…] [PROMPT=lumen] [OUT=…] (ch
 	@test -n "$(IMAGE)" || { echo "ERREUR : préciser IMAGE=chemin/image.png" >&2; exit 1; }
 	$(RUN) sam3 python src/infer.py $(IMAGE) $(if $(WEIGHTS),--weights $(WEIGHTS)) \
 	  $(if $(PROMPT),--prompt "$(PROMPT)") $(if $(OUT),--out $(OUT))
+
+# Repart de zéro à chaque fois : sinon le checkpoint de l'essai précédent (époque 10) sauterait l'entraînement.
+# Le rm se fait dans le conteneur, qui écrit logs/ en root.
+smoke: .env ## Test de bout en bout sur data/small : annotations, 10 époques, validation (CLASS=LM par défaut)
+	$(RUN) -e CLASS=$(SMOKE_CLASS) -e LOG_DIR=/app/logs/smoke_$(SMOKE_CLASS) sam3 bash -c " \
+	  python3 src/data/masks_to_rle.py data/small \
+	  && python3 src/data/make_coco_annotations.py data/small/train \
+	  && python3 src/data/make_coco_annotations.py data/small/test \
+	  && rm -rf /app/logs/smoke_$(SMOKE_CLASS) \
+	  && cd /app/sam3 && $(TRAIN) configs/project/smoke.yaml"
 
 check: ## Teste le pipeline de données sur tests/fixtures (sans Docker ni GPU)
 	bash tests/check_data.sh

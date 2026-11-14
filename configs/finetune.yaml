@@ -15,7 +15,7 @@ roboflow_train:
   num_images: null # Note: This is the number of images used for training. If null, all images are used.
   num_val_images: null # Note: Number of images used for validation. If null, all images are used (needed for meaningful COCO metrics).
   # DATASET, CLASS et LOG_DIR sont lus dans l'environnement (fixés par le Makefile, cibles train et eval-base)
-  supercategory: ${oc.env:DATASET,small_fold}
+  supercategory: ${oc.env:DATASET,small}
   ann_name: annotation_${oc.env:CLASS,LM}.json # Note: One file per class (LM, FC, LC, VV), written by src/data/make_coco_annotations.py
 
   # Training transforms pipeline

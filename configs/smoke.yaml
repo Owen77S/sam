@@ -1,0 +1,15 @@
+# @package _global_
+# Test de bout en bout sur data/small (20 images en train, 10 en test) :
+# 10 époques puis une validation sur test/. Lancé par `make smoke`.
+defaults:
+  - finetune
+  - _self_
+
+paths:
+  experiment_log_dir: ${oc.env:LOG_DIR,/app/logs/smoke}
+
+roboflow_train:
+  supercategory: small  # fixe : ignore DATASET
+
+trainer:
+  max_epochs: 10

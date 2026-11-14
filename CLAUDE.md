@@ -22,8 +22,8 @@ ce fichier ne couvre que ce qu'il faut savoir avant de modifier ou de lancer que
   « Écarts de `sam3/` » du README.
 - Les chemins des configs sont ceux du conteneur (`/app/...`, le dépôt monté ; `tools/setup_pod.sh`
   crée le même lien sur RunPod). `DATASET`, `CLASS` et `LOG_DIR` sont lus dans l'environnement.
-- `make train` et `make eval-base` visent `data/base/fold_N` en dur ; `small_fold` se lance à la main
-  (README, « Essai rapide »).
+- `make train` et `make eval-base` visent `data/base/fold_N` en dur ; `data/small` se teste avec
+  `make smoke` (`configs/smoke.yaml` : 10 époques, `supercategory` fixée à `small`).
 - La reprise repose sur des fichiers `DONE` dans `logs/` : supprimer le `DONE` pour refaire une étape.
   Le conteneur écrit `logs/` en root.
 - `merge_splits.sh` fabrique `fold_N/all` avec `ln` (liens durs) : ne pas passer à `cp -al`, qui écrase

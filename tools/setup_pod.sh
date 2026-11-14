@@ -42,8 +42,8 @@ python -c "import torch; assert torch.cuda.is_available(), 'GPU non visible par 
 if [ -z "${HF_TOKEN:-}" ]; then
     echo "ATTENTION : HF_TOKEN n'est pas défini (variables d'environnement du pod dans la console RunPod)"
 fi
-if [ ! -d data/small_fold ]; then
-    echo "ATTENTION : data/small_fold est absent (data/ n'est pas dans git, à envoyer à part)"
+if [ ! -d data/small ]; then
+    echo "ATTENTION : data/small est absent (data/ n'est pas dans git, à envoyer à part)"
 fi
 
 echo
