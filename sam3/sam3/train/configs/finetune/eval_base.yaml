@@ -7,7 +7,8 @@ defaults:
 
 paths:
   # dossier sans checkpoint : le modèle garde les poids d'origine
-  experiment_log_dir: /app/logs/base
+  # (LOG_DIR ne doit donc pas être celui d'un entraînement)
+  experiment_log_dir: ${oc.env:LOG_DIR,/app/logs/base}
 
 trainer:
   mode: val
